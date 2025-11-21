@@ -1,12 +1,19 @@
 # MG-Zeta Data Warehouse Separation - Project Scope
 
-**Project Period:** November 17, 2025 - March 31, 2026 (4.5 months)  
-**Prepared By:** Shogun (Lead Consultant)  
-**Version:** 1.0
+**Project Period:** November 17, 2025 - March 31, 2026\
+**Prepared By:** Friscian Viales\
+**Version:** 1.1
+
+---
 
 ## Executive Summary
 
-This project separates the unified data warehouse infrastructure into two independent systems: one for Marigold Commercial (new GCP project: `mg-dw-workbench`) and one for Zeta Enterprise (existing GCP project: `globalbiworkbench`). The approach replicates existing architecture with data segregation, ensuring business continuity for both organizations.
+This project separates the unified data warehouse infrastructure into two independent systems:
+one for Marigold Commercial (new GCP project: `mg-dw-workbench`) and one for Zeta Enterprise
+(existing GCP project: `globalbiworkbench`). The approach replicates existing architecture with 
+data segregation, ensuring business continuity for both organizations.
+
+---
 
 ## Project Objectives
 
@@ -16,6 +23,8 @@ This project separates the unified data warehouse infrastructure into two indepe
 4. Migrate Tableau dashboards for Commercial analytics
 5. Complete transition within contract period with minimal business disruption
 
+---
+
 ## Scope
 
 ### In Scope
@@ -23,48 +32,49 @@ This project separates the unified data warehouse infrastructure into two indepe
 - BigQuery datasets and data models for Commercial data
 - GCS buckets for data lake and staging
 - GKE Autopilot cluster deployment for pipeline orchestration
-- Luigi pipeline redeployment (existing framework, no modernization)
+- Luigi pipeline redeployment
 - Data source connections: Salesforce, NetSuite, Zuora, AWS S3
 - Tableau Cloud account setup and dashboard migration
 - CI/CD pipeline setup via Cloud Build
 - IAM, Secret Manager, and monitoring configuration
 - Documentation and knowledge transfer
 
-### Out of Scope
-- Luigi to Windmill migration (future phase)
-- Architecture modernization or optimization
-- Data model changes or improvements
-- Zeta Enterprise infrastructure work (handled by Zeta team)
-- Historical data beyond agreed retention period
-- Third-party integration platform evaluation
+---
 
 ## Timeline Overview
 
-**Total Duration:** 4.5 months (18 weeks)
+**Total Duration:** 4 months (19 weeks)
 
-### Phase 1: Foundation (Weeks 1-4)
-- GCP project provisioning and base infrastructure
+### Phase 1: Foundation (Weeks 1-3 / 20251117-20251205) 
+- GCP project provisioning and base infrastructure deployment
 - GitHub repository setup
 - Service accounts and IAM configuration
 - CI/CD pipeline deployment
 
-### Phase 2: Data Infrastructure (Weeks 5-10)
-- BigQuery dataset creation and schema deployment
+### Phase 2: Staging Layer (Weeks 4-6 / 20251208-20251226)
+- BigQuery STG dataset creation
 - Data source connections (Salesforce, NetSuite, Zuora, AWS)
 - Luigi pipeline deployment and testing
+- Stage table deployment
 - Data validation and quality checks
 
-### Phase 3: Analytics Layer (Weeks 11-14)
+### Phase 3: Analytics Layer (Weeks 7-11 / 20251229-20260130)
+- BigQuery ODS & EDW dataset creation
+- dbt models deployment
 - Tableau Cloud account provisioning
-- Dashboard migration and reconnection
-- User access and training
-- Parallel validation period
+- Dashboard migration and reconnection to new EDW models
+- Stakeholder validation period (Incremental and In-Parallel)
 
-### Phase 4: Cutover & Stabilization (Weeks 15-18)
+### Phase 4: Validation & Stabilization (Weeks 12-15 / 20260202-20260227)
 - Final data validation
 - Production cutover
 - Monitoring and issue resolution
 - Project closeout and handoff
+
+### Phase 5: Buffer (Weeks 16-20 / 20260302-20260331)
+- Additional time buffer to account for unforeseen risks and blockers
+
+---
 
 ## Key Deliverables
 
@@ -89,6 +99,8 @@ This project separates the unified data warehouse infrastructure into two indepe
    - Data lineage and source documentation
    - Training materials
 
+---
+
 ## Critical Dependencies
 
 ### External Dependencies
@@ -96,42 +108,17 @@ This project separates the unified data warehouse infrastructure into two indepe
 - **NetSuite:** New integration setup due to backend upgrade (MG team)
 - **AWS:** S3 bucket access for Commercial data exports (Zeta team)
 - **Tableau:** Cloud account procurement (MG team)
-- **GCP:** Budget approval and account setup (MG team)
 
 ### Technical Dependencies
-- Access to existing codebase and documentation
-- Zeta team cooperation for account transfer planning
 - Salesforce schema alignment with existing models
-- AWS S3 bucket structure and access patterns
+- AWS S3 bucket structure and access patterns to remain unchanged
 
-## Risk Assessment
-
-| Risk                          | Probability | Impact | Mitigation                                                              |
-|-------------------------------|-------------|--------|-------------------------------------------------------------------------|
-| Salesforce data model changes | High        | High   | Early SFDC team engagement; schema validation; flexible pipeline design |
-| NetSuite integration delays   | High        | High   | Prioritize NetSuite rebuild; establish fallback plan                    |
-| AWS resource access issues    | Medium      | Medium | Document dependencies early; secure access agreements                   |
-| Timeline compression          | Medium      | High   | Focus on critical path; parallel workstreams where possible             |
-| Knowledge gaps                | Medium      | Medium | Comprehensive documentation; training sessions                          |
-| Data quality issues           | Low         | High   | Rigorous testing; parallel validation period                            |
+---
 
 ## Success Criteria
-
-### Technical Metrics
-- All data pipelines operational with >99% success rate
-- Data latency <24 hours for batch processes
-- Zero critical data quality incidents post-cutover
-- System uptime >99% after stabilization
-
-### Business Metrics
-- No gaps in Commercial reporting capabilities
-- All critical dashboards migrated and validated
-- User acceptance achieved
-
-### Operational Metrics
-- Documentation complete (>90% coverage)
-- Team operational independence
-- Infrastructure costs within projections
+- Track progress on a daily and weekly basis
+- Monitor adherence to timelines
+- 80% of migration completed by the end of January 2026
 
 ## Resource Requirements
 
@@ -145,61 +132,19 @@ This project separates the unified data warehouse infrastructure into two indepe
 
 ### External Services
 - Tableau Cloud (Creator + Explorer licenses)
-- GitHub Enterprise
-
-### Personnel
-- Lead Consultant (full-time)
-- Data Engineering support (as needed)
-- SFDC team coordination
-- Business stakeholder engagement
-
-## Budget Considerations
-
-**Estimated Monthly Run Rate (post-deployment):**
-- GCP Infrastructure: $400-600/month
-- Tableau Cloud: TBD (based on license count)
-- **Total:** $400-600/month (excluding Tableau)
-
-## Project Organization
-
-### Steering Committee
-- Marigold stakeholders
-- Zeta coordination contacts
-- Data Engineering leadership
-
-### Core Team
-- Lead Consultant (Shogun)
-- Data Engineering Team (Ryan Whitehouse, Friscian Viales, Sai Rediboyina)
-- SFDC Team (Ryan Whitehouse, Pinal Kakadiya)
-- AWS Team (Rio Delfin)
-- Billing Team (Ryan Whitehouse, Erica Biehl, Jocelyn May)
+- GitHub Account
 
 ### Communication
-- Weekly status updates
-- Bi-weekly steering committee check-ins
+- Weekly status updates every Monday
 - Slack channel for day-to-day coordination
 - Issue tracking via GitHub
 
 ## Assumptions
 
-1. Existing GCP project will be transferred to Zeta ownership
-2. Marigold will establish new GCP organization/account
-3. Both parties will cooperate on IP sharing during transition
-4. New Salesforce instance will maintain schema compatibility
+1. Existing GCP project will be transferred to Zeta ownership (Potentially under sailthru.com organization)
+2. Marigold will establish new GCP project (`mg-dw-workbench`)
+4. New Salesforce instance will maintain schema compatibility for plug-and-play migration of ETL pipelines
 5. NetSuite remains with Marigold Commercial
-6. AWS resources currently owned by CM remain with Commercial
-7. Budget approval obtained for new infrastructure
-8. Zeta will establish separate AWS account for Enterprise exports
-
-## Next Steps
-
-1. Secure executive approval and budget allocation
-2. Initiate GCP account creation
-3. Begin Salesforce instance planning
-4. Schedule project kickoff meeting
-5. Establish communication channels and cadence
-
----
-
-**Document Status:** Draft v1.0  
-**Next Review:** Post-kickoff meeting
+6. Zeta yet to define how they are going to manage billing data
+7. AWS resources currently owned by CM remain with Commercial
+8. Zeta yet to define how they will continue to export CD usage data (Potentially to new AWS account)
