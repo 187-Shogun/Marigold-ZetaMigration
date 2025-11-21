@@ -8,7 +8,7 @@
 ---
 
 ## Phase 1: Foundation & Infrastructure Setup
-**Duration:** Weeks 1-3 (Nov 17 - Dec 5, 2025)
+**Duration:** Weeks 1-3 (Nov 17 - Dec 5, 2025)\
 **Objective:** Establish new GCP infrastructure and development environment
 
 ### 1.1 GCP Core Infrastructure
@@ -201,11 +201,44 @@
 ---
 
 ## Phase 2: Staging Layer & Data Source Connections
-**Duration:** Weeks 4-6 (Dec 8 - Dec 26, 2025)
-**Critical:** NetSuite integration MUST complete by Dec 31, 2025
+**Duration:** Weeks 4-6 (Dec 8 - Dec 26, 2025)\
+**Critical:** NetSuite integration MUST complete by Dec 31, 2025\
 **Note:** Holiday PTO on Dec 24, 25, 31, Jan 1
 
-### 2.1 NetSuite Integration (CRITICAL PRIORITY - Week 4)
+### 2.1 Luigi Orchestration Infrastructure - Week 4
+
+#### Luigi Scheduler Deployment
+- [ ] Create Luigi scheduler configuration
+  - Set up Luigi database backend (PostgreSQL or file-based)
+  - Configure logging
+- [ ] Create Kubernetes deployment for Luigi scheduler
+  - Define resource limits (CPU, memory)
+  - Configure persistent volume for Luigi state
+  - Set up health checks
+- [ ] Deploy Luigi to GKE
+  - Apply Kubernetes manifests
+  - Verify pods are running
+  - Check logs for errors
+- [ ] Set up Luigi web UI
+  - Deploy Luigi visualizer
+  - Configure authentication
+  - Test web UI access
+- [ ] Configure Luigi task scheduling
+  - Set up cron schedules for each pipeline
+  - Configure task retry policies
+
+#### Luigi Monitoring & Alerting
+- [ ] Configure Luigi logging
+  - Send logs to Cloud Logging
+  - Set up log-based metrics
+- [ ] Configure notification channels
+  - Slack notifications channel
+- [ ] Create Luigi troubleshooting guide
+  - Common failure modes
+  - How to restart failed tasks
+  - How to check task logs
+
+### 2.2 NetSuite Integration (CRITICAL PRIORITY - Week 4-5)
 
 #### NetSuite Research & Design
 - [ ] Review NetSuite's new backend API documentation
@@ -215,7 +248,6 @@
 - [ ] Analyze existing NetSuite integration code
   - Document current extraction logic
   - Identify data entities being extracted (invoices, customers, subscriptions, etc.)
-  - Document transformation logic
 - [ ] Design new NetSuite integration architecture
   - API endpoint mappings
   - Authentication flow
@@ -242,35 +274,41 @@
   - Payment data extraction
   - Subscription data extraction
   - Product/service catalog extraction
-- [ ] Implement data transformation logic
-  - Schema mapping from NetSuite to STG tables
-  - Data type conversions
-  - Null handling and defaults
-  - Data validation rules
 - [ ] Create unit tests for NetSuite connector
-- [ ] Create integration tests with NetSuite sandbox (if available)
 
 #### NetSuite Staging Tables & Pipeline
 - [ ] Design BigQuery staging tables for NetSuite
-  - `STG.netsuite_customers`
-  - `STG.netsuite_invoices`
-  - `STG.netsuite_payments`
-  - `STG.netsuite_subscriptions`
-  - `STG.netsuite_products`
-- [ ] Create DDL scripts for NetSuite staging tables
-  - Define schema with proper data types
-  - Add partitioning by date (if applicable)
-  - Add clustering keys for query optimization
-  - Add table descriptions and column comments
+  - `accounts`
+  - `billing_accounts`
+  - `billing_schedule_descriptions`
+  - `billing_subscription_lines`
+  - `billing_subscriptions`
+  - `countries`
+  - `currencies`
+  - `currencyrates`
+  - `customers`
+  - `index_formula`
+  - `index_name`
+  - `items`
+  - `price_tiers`
+  - `pricing_change_type`
+  - `subscript_line_price_intervals`
+  - `subscription_change_orders`
+  - `subsidiaries`
+  - `transaction_lines`
+  - `transactions`
+  - `zab_subscription`
+  - `zab_subscription_item`
+  - `zab_transaction_type`
+  - `zab_usage_data`
 - [ ] Deploy NetSuite staging tables to BigQuery
 - [ ] Create Luigi task for NetSuite ingestion
   - Task dependencies and scheduling
-  - Incremental load logic (based on last_modified_date)
-  - Full refresh logic (for historical loads)
+  - Full refresh logic
   - Data quality checks
   - Success/failure logging
 - [ ] Deploy Luigi task to GKE
-- [ ] Create Kubernetes CronJob for NetSuite pipeline (or Luigi scheduler config)
+- [ ] Create Kubernetes CronJob for NetSuite pipeline
 
 #### NetSuite Integration Testing & Validation
 - [ ] Test NetSuite API connection
@@ -294,10 +332,6 @@
   - Verify key fields (customer IDs, invoice totals)
   - Check for missing or null critical fields
   - Validate date ranges
-- [ ] Test incremental load logic
-  - Run pipeline to extract only new/updated records
-  - Verify incremental logic works correctly
-  - Validate data freshness
 - [ ] Monitor NetSuite pipeline for 3-5 days
   - Check for consistent success
   - Monitor execution time
@@ -307,64 +341,42 @@
   - Create NetSuite troubleshooting guide
   - Update runbook with NetSuite procedures
 
-### 2.2 Salesforce (SFDC) Connection - Week 5
+### 2.3 Salesforce (SFDC) Connection - Week 5-6
 
 #### SFDC Connection Setup (Existing Instance)
 - [ ] Obtain SFDC credentials for existing instance
   - Username, password, security token
-  - Or OAuth credentials if available
 - [ ] Store SFDC credentials in Secret Manager
 - [ ] Test SFDC API connectivity
   - Verify authentication
   - Test API limits and quotas
   - Review SFDC API documentation
-- [ ] Audit existing SFDC pipeline code
-  - Identify SFDC objects being extracted
-  - Review extraction logic and transformations
-  - Identify any Enterprise-specific filters to update
 
 #### SFDC Staging Tables & Schema
 - [ ] Design BigQuery staging tables for SFDC
-  - `STG.sfdc_account`
-  - `STG.sfdc_opportunity`
-  - `STG.sfdc_contact`
-  - `STG.sfdc_lead`
-  - `STG.sfdc_campaign`
-  - `STG.sfdc_campaign_member`
-  - `STG.sfdc_opportunity_line_item`
-  - `STG.sfdc_user`
-  - Additional custom objects as needed
-- [ ] Create DDL scripts for SFDC staging tables
-  - Define schema matching SFDC object structure
-  - Add partitioning by SystemModstamp or CreatedDate
-  - Add clustering for frequently queried fields
-  - Document field mappings and descriptions
-- [ ] Deploy SFDC staging tables to BigQuery
+  - `Account`
+  - `Campaign`
+  - `CampaignMember`
+  - `Case`
+  - `Contact`
+  - `Contract`
+  - `JIRA_Issue__c`
+  - `Opportunity`
+  - `OpportunityLineItem`
+  - `Product2`
+  - `SBQQ__Quote__c`
+  - `SBQQ__Quoteline__c`
+  - `SBQQ__Subscription__c`
+  - `Services_Project__c`
+  - `User`
 
 #### SFDC Luigi Pipeline Development
 - [ ] Update existing Luigi tasks for SFDC extraction
   - Update GCP project references
   - Update BigQuery dataset references
   - Update GCS staging bucket references
-  - Remove Enterprise-specific SOQL filters
-  - Update Commercial-specific filters (if applicable)
 - [ ] Create Luigi task for each SFDC object
-  - Account extraction task
-  - Opportunity extraction task
-  - Contact extraction task
-  - Lead extraction task
-  - Campaign extraction task
-  - Custom object extraction tasks
-- [ ] Implement incremental load logic
-  - Use SystemModstamp for incremental extraction
-  - Full refresh logic for weekly/monthly loads
-- [ ] Add data quality checks to each task
-  - Null value checks for critical fields
-  - Referential integrity checks (e.g., Opportunity.AccountId exists)
-  - Date range validation
 - [ ] Configure task dependencies
-  - Account before Opportunity (FK relationship)
-  - Campaign before Campaign Member
 - [ ] Deploy SFDC Luigi tasks to GKE
 
 #### SFDC Testing & Validation
@@ -376,19 +388,9 @@
   - Verify schema compatibility
   - Check for data type mismatches
   - Validate special characters and encoding
-- [ ] Run full historical load for key objects
-  - Load all Accounts
-  - Load all Opportunities (last 2 years or as needed)
-  - Load all Contacts
-  - Load all Leads
 - [ ] Validate SFDC data quality
   - Compare row counts with SFDC reports
   - Verify key metrics (open opportunities, customer count)
-  - Check for missing parent records (orphaned Opportunities)
-- [ ] Test incremental load
-  - Create/update test records in SFDC
-  - Run incremental extraction
-  - Verify new/updated records appear in BigQuery
 - [ ] Schedule SFDC pipelines
   - Daily incremental loads (early morning)
   - Weekly full refresh (weekends)
@@ -402,35 +404,34 @@
   - Create connection configuration checklist
   - Plan for schema validation when new instance is ready
 
-### 2.3 Zuora Connection - Week 5
+### 2.4 Zuora Connection - Week 5-6
 
 #### Zuora API Setup
 - [ ] Obtain Zuora API credentials
   - API username and password
-  - Or OAuth credentials
 - [ ] Store Zuora credentials in Secret Manager
-- [ ] Review Zuora API documentation
-  - Authentication method
-  - Available endpoints (REST vs SOAP)
-  - Rate limits and quotas
 - [ ] Test Zuora API connectivity
 - [ ] Audit existing Zuora pipeline code
-  - Identify data entities being extracted
-  - Review extraction and transformation logic
 
 #### Zuora Staging Tables & Schema
 - [ ] Design BigQuery staging tables for Zuora
-  - `STG.zuora_account`
-  - `STG.zuora_subscription`
-  - `STG.zuora_invoice`
-  - `STG.zuora_payment`
-  - `STG.zuora_product`
-  - `STG.zuora_rate_plan`
-  - Additional objects as needed
-- [ ] Create DDL scripts for Zuora staging tables
-  - Define schema based on Zuora object structure
-  - Add partitioning by date
-  - Add clustering for optimization
+  - `account`
+  - `accountingcode`
+  - `amendment`
+  - `contact`
+  - `creditmemo`
+  - `creditmemoitem`
+  - `invoice`
+  - `invoiceadjustment`
+  - `invoiceitem`
+  - `invoiceitemadjustment`
+  - `payment`
+  - `productrateplancharge`
+  - `rateplan`
+  - `rateplancharge`
+  - `rateplanchargetier`
+  - `refund`
+  - `subscription`
 - [ ] Deploy Zuora staging tables to BigQuery
 
 #### Zuora Luigi Pipeline Development
@@ -439,18 +440,7 @@
   - Update credential references to Secret Manager
   - Remove Enterprise-specific filters
 - [ ] Create Luigi task for each Zuora object
-  - Account extraction
-  - Subscription extraction
-  - Invoice extraction
-  - Payment extraction
-  - Product catalog extraction
-- [ ] Implement incremental load logic
-  - Use UpdatedDate for incremental loads
-  - Implement full refresh for historical data
 - [ ] Add data quality checks
-  - Subscription status validation
-  - Invoice total calculation checks
-  - Payment reconciliation checks
 - [ ] Deploy Zuora Luigi tasks to GKE
 
 #### Zuora Testing & Validation
@@ -461,29 +451,19 @@
   - Verify schema compatibility
   - Check for data issues
 - [ ] Run full historical data load
-  - Load all active subscriptions
-  - Load invoices (last 2 years or as needed)
-  - Load payment history
 - [ ] Validate Zuora data quality
   - Compare row counts with Zuora reports
   - Verify subscription metrics
   - Validate invoice totals
-- [ ] Test incremental load
-  - Update test records in Zuora
-  - Run incremental extraction
-  - Verify updates appear in BigQuery
 - [ ] Schedule Zuora pipelines
-  - Daily incremental loads
-  - Weekly full refresh
 - [ ] Monitor Zuora pipeline for 3-5 days
 - [ ] Document Zuora integration
 
-### 2.4 AWS S3 Data Sources - Week 6
+### 2.5 AWS S3 Data Sources - Week 6-7
 
 #### AWS S3 Access Configuration
 - [ ] Obtain AWS S3 access credentials
   - AWS Access Key ID and Secret Access Key
-  - Or IAM role for cross-account access
 - [ ] Identify S3 bucket locations
   - CM usage data bucket (name, region, path)
   - Emma usage data bucket (name, region, path)
@@ -502,13 +482,39 @@
   - Emma usage data file structure
   - Identify schema variations over time
 - [ ] Design BigQuery staging tables for S3 data
-  - `STG.s3_cm_usage_data`
-  - `STG.s3_emma_usage_data`
-- [ ] Create DDL scripts for S3 staging tables
-  - Define schema to accommodate file structure
-  - Add partitioning by usage date
-  - Add clustering for query optimization
-  - Handle schema evolution (add _raw JSON column if needed)
+  - `accountdiscounthistory`
+  - `accountmonthlyrollup`
+  - `accountplantype`
+  - `accounts`
+  - `campaigns`
+  - `campaignsummary`
+  - `clients`
+  - `clientsendsummarytransactional`
+  - `lists`
+  - `listsegments`
+  - `persons`
+  - `revenue`
+  - `RBAExchangeRates`
+  - `SubscriberCounts`
+  - `UniqueSubCountdb1`
+  - `UniqueSubCountdb2`
+  - `UniqueSubCountdb3`
+  - `UniqueSubCountdb4`
+  - `UniqueSubCountdb5`
+  - `UniqueSubCountdb6`
+  - `UniqueSubCountdb7`
+  - `AutoResponderUsagedb1`
+  - `AutoResponderUsagedb2`
+  - `AutoResponderUsagedb3`
+  - `AutoResponderUsagedb4`
+  - `AutoResponderUsagedb5`
+  - `AutoResponderUsagedb6`
+  - `AutoResponderUsagedb7`
+  - `accounts`
+  - `billing_usage`
+  - `email_usage`
+  - `list`
+  - `aggregate_count`
 - [ ] Deploy S3 staging tables to BigQuery
 
 #### S3 Luigi Pipeline Development
@@ -524,9 +530,6 @@
   - Archive processed files
 - [ ] Create Luigi task for Emma usage data
   - Similar logic as CM usage data
-- [ ] Implement file tracking mechanism
-  - Track processed files to avoid duplicates
-  - Store file manifest in BigQuery or GCS
 - [ ] Add data quality checks
   - File completeness validation
   - Row count validation
@@ -560,78 +563,12 @@
   - Run incremental extraction
   - Verify only new files are processed
 - [ ] Schedule S3 pipelines
-  - Daily or hourly extraction (based on file arrival schedule)
+  - Daily extraction
 - [ ] Monitor S3 pipeline for 3-5 days
 - [ ] Document S3 integration
   - File formats and schemas
   - Processing schedule
   - File archiving strategy
-
-### 2.5 Luigi Orchestration Infrastructure - Week 6
-
-#### Luigi Scheduler Deployment
-- [ ] Create Luigi scheduler configuration
-  - Configure task registry
-  - Set up Luigi database backend (PostgreSQL or file-based)
-  - Configure logging
-- [ ] Create Kubernetes deployment for Luigi scheduler
-  - Define resource limits (CPU, memory)
-  - Configure persistent volume for Luigi state
-  - Set up health checks
-- [ ] Create Kubernetes deployment for Luigi workers
-  - Define worker pool size
-  - Configure resource limits
-  - Set up autoscaling (if applicable)
-- [ ] Deploy Luigi to GKE
-  - Apply Kubernetes manifests
-  - Verify pods are running
-  - Check logs for errors
-- [ ] Set up Luigi web UI (if applicable)
-  - Deploy Luigi visualizer
-  - Configure authentication
-  - Test web UI access
-- [ ] Configure Luigi task scheduling
-  - Set up cron schedules for each pipeline
-  - Define task priorities
-  - Configure task retry policies
-
-#### Luigi Monitoring & Alerting
-- [ ] Configure Luigi logging
-  - Send logs to Cloud Logging
-  - Set up log-based metrics
-- [ ] Create monitoring dashboards
-  - Task execution dashboard (success/failure rates)
-  - Task duration dashboard
-  - Data freshness dashboard
-- [ ] Set up alerting rules
-  - Alert on task failures
-  - Alert on long-running tasks
-  - Alert on data freshness SLA violations
-- [ ] Configure notification channels
-  - Email notifications
-  - Slack notifications (if applicable)
-- [ ] Create Luigi troubleshooting guide
-  - Common failure modes
-  - How to restart failed tasks
-  - How to check task logs
-
-#### Pipeline Dependency Management
-- [ ] Document task dependency graph
-  - Create visual diagram of task dependencies
-  - Identify critical path tasks
-- [ ] Configure inter-task dependencies
-  - Ensure proper execution order
-  - Handle cross-source dependencies
-- [ ] Test end-to-end pipeline execution
-  - Trigger full pipeline run
-  - Verify all tasks execute in correct order
-  - Check for timing issues
-- [ ] Optimize pipeline schedule
-  - Stagger tasks to avoid resource contention
-  - Ensure tasks complete before business hours
-- [ ] Create pipeline restart procedures
-  - How to rerun failed pipelines
-  - How to backfill historical data
 
 ### 2.6 Staging Layer Validation & Sign-off
 
