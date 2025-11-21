@@ -14,52 +14,28 @@
 ### 1.1 GCP Core Infrastructure
 
 #### GCP Project & Organization Setup
-- [x] Create new GCP project `mg-dw-workbench` (COMPLETED)
+- [ ] Create new GCP project `mg-dw-workbench`
 - [ ] Configure billing account and link to project
-- [ ] Set up budget alerts ($500, $750, $1000 thresholds)
-- [ ] Configure GCP organization policies
 - [ ] Enable required GCP APIs (BigQuery, GKE, Cloud Build, Secret Manager, etc.)
-- [ ] Set up project-level IAM audit logging
 
 #### BigQuery Infrastructure
 - [ ] Create `STG` dataset (staging layer)
   - Configure US multi-region location
-  - Set default table expiration (90 days for temp tables)
   - Configure dataset-level permissions
 - [ ] Create `ODS` dataset (operational data store)
-  - Configure partitioning defaults
-  - Set up dataset access controls
+  - Configure dataset-level permissions
 - [ ] Create `EDW` dataset (enterprise data warehouse)
-  - Configure clustering recommendations
-  - Set up authorized views structure
+  - Configure dataset-level permissions
 - [ ] Create `DEV` dataset for development/testing
 - [ ] Document dataset naming conventions and purpose
-- [ ] Configure BigQuery reservations/slots (if needed)
-- [ ] Set up BigQuery audit logging
 
 #### Google Cloud Storage (GCS)
-- [ ] Create `mg-dw-datalake-raw` bucket
-  - Configure lifecycle policies (archive after 90 days)
-  - Set up versioning
+- [ ] Create `mg-dw-datalake` bucket
   - Configure IAM permissions
-- [ ] Create `mg-dw-datalake-processed` bucket
-  - Configure retention policies
-  - Set up access logging
-- [ ] Create `mg-dw-staging` bucket for temporary files
-  - Configure auto-deletion after 7 days
-- [ ] Create `mg-dw-backups` bucket
-  - Configure long-term retention
-  - Set up cross-region replication (optional)
-- [ ] Create `mg-dw-pipeline-logs` bucket for Luigi logs
 - [ ] Document bucket naming conventions and usage
 
 #### Google Kubernetes Engine (GKE)
-- [ ] Design GKE cluster configuration
-  - Select region (us-central1 or us-east1)
-  - Choose Autopilot vs Standard mode
-  - Define network configuration
 - [ ] Deploy GKE Autopilot cluster
-  - Configure node pools
   - Set up cluster autoscaling parameters
   - Configure cluster networking (VPC-native)
 - [ ] Configure GKE workload identity
@@ -67,20 +43,13 @@
 - [ ] Set up kubectl access
   - Configure kubeconfig
   - Test cluster connectivity
-- [ ] Deploy cluster monitoring
-  - Enable GKE monitoring
-  - Configure log collection
-  - Set up resource usage dashboards
 - [ ] Create namespaces
-  - `production` namespace for prod pipelines
-  - `staging` namespace for testing
-  - `monitoring` namespace for observability tools
+  - `luigi` namespace for luigi pipelines
 - [ ] Document cluster architecture and access procedures
 
 #### Cloud Build & Artifact Registry
 - [ ] Create Artifact Registry repositories
   - `mg-dw-docker-images` for container images
-  - Configure vulnerability scanning
   - Set up retention policies
 - [ ] Configure Cloud Build service account permissions
 - [ ] Create Cloud Build trigger templates (will connect after GitHub setup)
@@ -89,14 +58,12 @@
 
 #### Secret Manager
 - [ ] Set up Secret Manager structure
-  - Create secret naming convention (e.g., `prod-sfdc-username`)
+  - Create secret naming convention (e.g., `sfdc-username`)
 - [ ] Create placeholder secrets for:
   - Salesforce credentials
   - NetSuite credentials
   - Zuora API keys
   - AWS S3 access keys (CM and Emma)
-  - BigQuery service account keys
-  - Tableau credentials
 - [ ] Configure secret access IAM policies
 - [ ] Set up secret rotation policies (where applicable)
 - [ ] Document secret management procedures
@@ -105,81 +72,41 @@
 - [ ] Create service accounts
   - `luigi-pipeline-sa` for pipeline orchestration
   - `dbt-runner-sa` for dbt executions
-  - `tableau-connector-sa` for Tableau-BigQuery connection
-  - `cloudbuild-deploy-sa` for CI/CD deployments
-  - `monitoring-sa` for observability tools
 - [ ] Configure service account IAM roles
   - BigQuery Data Editor for pipeline accounts
   - Storage Object Admin for data lake access
   - Secret Manager Secret Accessor for credentials
   - Kubernetes Engine Developer for deployment accounts
 - [ ] Set up workload identity bindings for GKE
-- [ ] Configure IAM conditional policies (if needed)
-- [ ] Create service account key rotation procedure
-- [ ] Document complete IAM structure with role matrix
-
-#### Cloud Monitoring & Logging
-- [ ] Configure log sinks
-  - Send pipeline logs to GCS bucket
-  - Send error logs to dedicated BigQuery dataset
-- [ ] Create custom monitoring dashboards
-  - Pipeline execution dashboard
-  - BigQuery cost and usage dashboard
-  - GKE resource utilization dashboard
-  - Data freshness dashboard
-- [ ] Set up alerting policies
-  - Pipeline failure alerts (email/Slack)
-  - Budget threshold alerts
-  - Data freshness SLA violations
-  - GKE resource exhaustion alerts
-- [ ] Configure Error Reporting
-- [ ] Set up uptime checks for critical endpoints
-- [ ] Document monitoring and alerting strategy
-
-#### Networking & Security
-- [ ] Configure VPC network
-  - Create custom VPC (if not using default)
-  - Set up subnet ranges
-- [ ] Set up Cloud NAT for outbound connectivity
-- [ ] Configure VPC firewall rules
-  - Allow GKE cluster egress
-  - Restrict BigQuery access to specific service accounts
-- [ ] Set up VPC Service Controls (if required for compliance)
-- [ ] Configure SSL certificates for any exposed endpoints
-- [ ] Document network architecture
 
 ### 1.2 Version Control & Code Repository Setup
 
 #### GitHub Repository Structure
 - [ ] Create new GitHub organization or use existing
-- [ ] Create repository: `mg-dw-pipelines`
-  - For Luigi pipeline code
+- [ ] Create repository: `mg-dw-luigi-scheduler`
+  - For Luigi pipelines scheduler
   - Set up branch protection (main branch requires PR)
-  - Configure CODEOWNERS file
 - [ ] Create repository: `mg-dw-dbt`
   - For dbt models and transformations
   - Set up branch protection
-  - Configure dbt Cloud integration (if applicable)
-- [ ] Create repository: `mg-dw-infrastructure`
-  - For Terraform/infrastructure-as-code (optional)
+- [ ] Create repository: `mg-dw-luigi-sfdc`
+  - For SFDC luigi pipelines
+  - Document infrastructure components
+- [ ] Create repository: `mg-dw-luigi-netsuite`
+  - For NeuSuite luigi pipelines
+  - Document infrastructure components 
+- [ ] Create repository: `mg-dw-luigi-zuora`
+  - For Zuora luigi pipelines
+  - Document infrastructure components
+- [ ] Create repository: `mg-dw-luigi-s3`
+  - For S3 luigi pipelines
   - Document infrastructure components
 - [ ] Create repository: `mg-dw-docs`
   - For documentation, runbooks, architecture diagrams
-  - Set up GitHub Pages (optional)
-- [ ] Configure repository settings
-  - Enable Issues for bug tracking
-  - Set up GitHub Projects for task management
-  - Configure webhooks for CI/CD
-- [ ] Set up GitHub Actions runners (if using GitHub Actions)
 - [ ] Document repository structure and contribution guidelines
 
 #### Code Migration & Cleanup
 - [ ] Clone existing pipeline code from old repository
-- [ ] Create new branch structure (main, develop, feature branches)
-- [ ] Audit existing Luigi tasks
-  - Identify Commercial-specific pipelines
-  - Identify Enterprise-specific pipelines (mark for removal)
-  - Identify shared pipelines (require modification)
 - [ ] Remove Enterprise-specific pipeline code
   - Delete Enterprise brand-specific tasks
   - Remove Zeta-related data extractions
@@ -192,10 +119,6 @@
 - [ ] Update pipeline connection strings
   - Parameterize environment-specific configs
   - Move hardcoded credentials to Secret Manager references
-- [ ] Create configuration management structure
-  - `config/production.yaml`
-  - `config/staging.yaml`
-  - `config/development.yaml`
 - [ ] Set up .gitignore properly (exclude secrets, local configs)
 - [ ] Commit initial cleaned codebase
 - [ ] Document code structure and module organization
@@ -203,8 +126,6 @@
 #### CI/CD Pipeline Setup
 - [ ] Design CI/CD workflow
   - Define deployment triggers (merge to main, tags, manual)
-  - Define testing stages (lint, unit tests, integration tests)
-  - Define deployment stages (build, deploy to staging, deploy to prod)
 - [ ] Create Cloud Build configuration files
   - `cloudbuild-pipeline.yaml` for Luigi deployment
   - `cloudbuild-dbt.yaml` for dbt deployment
@@ -212,27 +133,14 @@
 - [ ] Connect GitHub repositories to Cloud Build
   - Set up build triggers for each repo
   - Configure trigger conditions (branch, path filters)
-- [ ] Create deployment scripts
-  - `deploy-luigi.sh` for Luigi to GKE
-  - `deploy-dbt.sh` for dbt models to BigQuery
-  - `rollback.sh` for emergency rollbacks
-- [ ] Configure Cloud Build substitution variables
-  - Project ID, region, cluster name, etc.
-- [ ] Set up build notifications (Slack/email on success/failure)
-- [ ] Create Kubernetes deployment manifests
-  - `k8s/luigi-scheduler-deployment.yaml`
-  - `k8s/luigi-worker-deployment.yaml`
-  - `k8s/luigi-service.yaml`
-  - `k8s/configmaps.yaml`
 - [ ] Test CI/CD pipeline end-to-end
   - Trigger test deployment to staging namespace
   - Verify automated build and deployment
-  - Test rollback procedure
 - [ ] Document CI/CD workflows and troubleshooting
 
 ### 1.3 Development Environment Setup
 
-#### Local Development Tools
+#### Local Development Tools (For New Users)
 - [ ] Set up local Python environment
   - Python 3.9+ installation
   - Virtual environment setup
@@ -271,8 +179,6 @@
   - How to deploy pipelines
   - How to deploy dbt models
   - How to rollback
-- [ ] Create incident response template
-- [ ] Create change log template
 - [ ] Set up documentation review process
 
 ### 1.4 Phase 1 Validation & Sign-off
@@ -1339,7 +1245,7 @@
   - Check dashboard list
   - Verify all dashboards accessible
 - [ ] Test end-to-end data flow
-  - Staging ’ ODS ’ EDW ’ Tableau
+  - Staging ï¿½ ODS ï¿½ EDW ï¿½ Tableau
   - Verify data latency is acceptable
   - Test data refresh end-to-end
 - [ ] Review dbt documentation
@@ -1385,7 +1291,7 @@
 - [ ] Data freshness validation
   - Verify staging tables are updating on schedule
   - Verify ODS/EDW models are running on schedule
-  - Check data latency (source system ’ Tableau)
+  - Check data latency (source system ï¿½ Tableau)
 - [ ] Pipeline reliability testing
   - Monitor pipeline success rates for 1 week
   - Test failure scenarios
